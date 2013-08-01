@@ -1,3 +1,4 @@
 https://github.com/cjihrig/borderfree/blob/master/main.js
 https://github.com/cjihrig/garnethill.api/tree/borderfree
 https://github.com/benkramerbb/borderfree
+https://docs.borderfree.com/display/PSMD/Checkout+API+2+-+getQuote+call#CheckoutAPI2-getQuotecall-domesticSession.orderProperties
