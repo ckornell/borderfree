@@ -35,33 +35,56 @@ function mapAddress(address, email) {
   return bfAddress;
 }
 
-function callApi(conf, json, callback) {
-  var checkout = conf.checkout
-    , xml = js2xml('message', json, {
-        prettyPrinting: {
-          indentString: '  '
-        }
-      })
-    , credentials = {
-        user: checkout.username,
-        pass: checkout.password,
-        sendImmediately: true
+function callApi(options, callback) { //auth, url, json, callback) {
+  if (!(options && options.url)) {
+    return callback(new Error('Missing required parameters for API request'));
+  }
+
+  if (!(options && options.authorization && options.authorization.username && options.authorization.password)) {
+    return callback(new Error('Missing required authentication parameters for API request'));
+  }
+
+  if (!(options && options.json && typeof options.json === 'object')) {
+    return callback(new Error('JSON data must be an object'));
+  }
+
+  options = _.defaults(options, {
+    json: {}
+  });
+
+  var xml = js2xml('message', options.json, {
+      prettyPrinting: {
+        indentString: '  '
       }
+    })
+    , credentials = {
+      user: options.authorization.username,
+      pass: options.authorization.password,
+      sendImmediately: true
+    };
 
   request({
-    uri: checkout.url,
+    uri: options.url,
     method: 'POST',
     body: xml,
     auth: credentials
-  }, function(error, response, body) {
+  }, function (error, response, body) {
     if (error) {
       return callback(error);
     } else if (response.statusCode !== 200) {
-      return callback(new Error('Bad status code ' + response.statusCode));
+      return callback(new Error('Bad status code: ' + response.statusCode));
     }
 
     xml2js(body, function(error, js) {
-      return callback(error, js);
+      var json = {};
+
+      try {
+        json = js.message.payload[0];
+      } catch(e) {
+        return callback('Error parsing response');
+      }
+
+      return callback(error, json);
     });
   });
 }
