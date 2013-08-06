@@ -35,7 +35,7 @@ function mapAddress(address, email) {
   return bfAddress;
 }
 
-function callApi(options, callback) { //auth, url, json, callback) {
+function callApi(options, callback) {
   if (!(options && options.url)) {
     return callback(new Error('Missing required parameters for API request'));
   }
